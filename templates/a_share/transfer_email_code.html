@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block meta_title %}Access shared files · HerbiesPlace{% endblock %}
+{% block layout %}
+<main class="max-w-md mx-auto px-4 py-10 space-y-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-bold text-gray-900">Access shared files</h1>
+    <p class="text-gray-600 text-sm">
+      Enter the email address the files were sent to and the 6‑digit code from the email.
+    </p>
+  </header>
+
+  <form method="post" class="space-y-4 bg-white shadow rounded-xl p-6">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="space-y-1">
+      <label class="text-sm font-medium text-gray-700">{{ form.email.label }}</label>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+    <div class="space-y-1">
+      <label class="text-sm font-medium text-gray-700">{{ form.code.label }}</label>
+      {{ form.code }}
+      {{ form.code.errors }}
+    </div>
+    <div class="flex items-center justify-between gap-3 mt-2">
+      <button type="submit" class="button flex-1">Continue</button>
+      <button form="email-resend-form" type="submit" class="button button-gray flex-1 text-sm">
+        Resend code
+      </button>
+    </div>
+  </form>
+
+  <form id="email-resend-form" method="post" action="{% url 'share:email-resend-code' %}">
+    {% csrf_token %}
+  </form>
+</main>
+{% endblock %}
+
+

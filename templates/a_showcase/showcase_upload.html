@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <h1 class="text-2xl font-semibold text-gray-100 mb-4">Upload showcase images</h1>
+
+  <form
+    method="post"
+    enctype="multipart/form-data"
+    hx-post="{% url 'showcase:upload' %}"
+    hx-target="#showcase-grid"
+    hx-swap="innerHTML"
+    class="space-y-4 bg-slate-900/60 border border-slate-700 rounded-xl p-6"
+  >
+    {% csrf_token %}
+
+    <div>
+      <label class="block text-sm font-medium text-gray-300 mb-1">
+        Select images
+      </label>
+      <input
+        type="file"
+        name="images"
+        multiple
+        accept="image/*"
+        class="block w-full text-sm text-gray-300
+               file:mr-4 file:rounded-md file:border-0
+               file:bg-indigo-600 file:px-4 file:py-2
+               file:text-sm file:font-semibold file:text-white
+               hover:file:bg-indigo-700
+               cursor-pointer"
+      />
+      <p class="mt-1 text-xs text-gray-400">
+        You can select multiple images at once. Each image will be resized so its shortest side is 1920px.
+      </p>
+    </div>
+
+    <button
+      type="submit"
+      class="inline-flex items-center px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+    >
+      Upload images
+    </button>
+  </form>
+
+  <div id="showcase-grid" class="mt-8">
+    {% include "a_showcase/partials/showcase_grid.html" %}
+  </div>
+</div>
+{% endblock %}
+
+

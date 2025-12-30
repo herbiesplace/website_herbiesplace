@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block meta_title %}Trust & Safety · HerbiesPlace{% endblock %}
+{% block meta_description %}Learn about our content policies, adult-only content gating, moderation practices, and how we handle your data on HerbiesPlace.{% endblock %}
+{% block layout %}
+<main class="max-w-4xl mx-auto px-4 py-10 space-y-8">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Trust & Safety</h1>
+        <p class="text-gray-600 mt-2">Your safety and privacy are our top priorities. Learn about our policies and practices.</p>
+    </div>
+
+    <!-- Adult-Only Content Gating -->
+    <section class="bg-white shadow rounded-lg p-6 space-y-4">
+        <h2 class="text-2xl font-bold text-gray-900">Adult-Only Content Protection</h2>
+        <p class="text-gray-700">
+            We take age verification seriously. Adult-only content is strictly gated and only accessible to verified adult users.
+        </p>
+        <div class="space-y-3">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Age Verification</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>All users must provide their date of birth during registration</li>
+                    <li>Only users who are 18 years or older can access adult-only content</li>
+                    <li>Date of birth cannot be changed by users after registration (staff review required)</li>
+                    <li>Users can opt-out of viewing adult content in their profile settings</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Content Filtering</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>Adult-only categories are clearly marked and restricted</li>
+                    <li>Adult-only content is automatically filtered from public galleries</li>
+                    <li>Content visibility respects user age and preferences</li>
+                    <li>Non-authenticated users never see adult-only content</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Staff Oversight</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>Only staff members can mark categories as "adult-only"</li>
+                    <li>All date of birth change requests are reviewed by staff</li>
+                    <li>Adult content access is blocked during pending DOB change requests</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Moderation & Flagging -->
+    <section class="bg-white shadow rounded-lg p-6 space-y-4">
+        <h2 class="text-2xl font-bold text-gray-900">Content Moderation</h2>
+        <p class="text-gray-700">
+            We maintain a safe and respectful community through active moderation and user reporting.
+        </p>
+        <div class="space-y-3">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Reporting Content</h3>
+                <p class="text-gray-700 mb-2">
+                    If you encounter content that violates our community guidelines, please report it immediately:
+                </p>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>Use the <a href="{% url 'contact' %}" class="text-indigo-600 hover:underline">contact form</a> to report inappropriate content</li>
+                    <li>Include the photo ID, user, or category in your report</li>
+                    <li>Specify the reason for your report (harassment, inappropriate content, copyright violation, etc.)</li>
+                    <li>Reports are reviewed by staff within 1 business day</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Staff Moderation</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>Staff members can edit or delete any content on the platform</li>
+                    <li>Comments can be removed by photo owners or staff</li>
+                    <li>All moderation actions are logged for accountability</li>
+                    <li>Users who repeatedly violate guidelines may face account restrictions</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Community Guidelines</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>Respect all users and their work</li>
+                    <li>No harassment, hate speech, or discriminatory content</li>
+                    <li>Respect copyright and intellectual property</li>
+                    <li>Do not share personal information without consent</li>
+                    <li>Adult content must be properly categorized and marked</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Handling -->
+    <section class="bg-white shadow rounded-lg p-6 space-y-4">
+        <h2 class="text-2xl font-bold text-gray-900">Data Privacy & Handling</h2>
+        <p class="text-gray-700">
+            We are committed to protecting your personal information and being transparent about how we handle your data.
+        </p>
+        <div class="space-y-3">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">What We Collect</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>Account information: username, email, display name, and profile picture</li>
+                    <li>Date of birth (required for age verification)</li>
+                    <li>User role (photographer, model, MUA, or visitor)</li>
+                    <li>Content you upload: photos, descriptions, and metadata</li>
+                    <li>Interactions: likes, comments, messages, and connections</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">How We Use Your Data</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>To provide and improve our services</li>
+                    <li>To enforce age verification and content policies</li>
+                    <li>To facilitate connections and messaging between users</li>
+                    <li>To send important account-related communications</li>
+                    <li>To respond to support requests and contact form submissions</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Data Security</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>All data is stored securely on our servers</li>
+                    <li>Passwords are hashed and never stored in plain text</li>
+                    <li>Date of birth information is protected and only used for age verification</li>
+                    <li>Staff access to user data is logged and audited</li>
+                    <li>We follow industry best practices for data protection</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Your Rights</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>You can update your profile information at any time</li>
+                    <li>You can delete your account and all associated data</li>
+                    <li>You can opt-out of viewing adult content in your settings</li>
+                    <li>You can control who sees your photos through visibility settings</li>
+                    <li>You can request a copy of your data by contacting us</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Data Retention</h3>
+                <ul class="list-disc list-inside space-y-1 text-gray-700 ml-4">
+                    <li>Your data is retained as long as your account is active</li>
+                    <li>Deleted accounts and content are permanently removed from our systems</li>
+                    <li>Audit logs are retained for security and compliance purposes</li>
+                    <li>Backup data is securely deleted according to our retention policy</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="bg-indigo-50 border border-indigo-200 rounded-lg p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Questions or Concerns?</h2>
+        <p class="text-gray-700 mb-4">
+            If you have questions about our Trust & Safety policies or need to report an issue, please don't hesitate to contact us.
+        </p>
+        <a href="{% url 'contact' %}" class="button inline-block">Contact Us</a>
+    </section>
+</main>
+{% endblock %}
+

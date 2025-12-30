@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-xl mx-auto px-4 py-10 space-y-6">
+    <div>
+        <p class="text-sm uppercase tracking-wide text-indigo-500 font-semibold">Categories</p>
+        <h1 class="text-3xl font-bold">Create category</h1>
+    </div>
+    {% include "a_portfolio/partials/category_form.html" with form=form %}
+</main>
+{% endblock %}
+

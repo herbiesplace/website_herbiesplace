@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block meta_title %}Search · HerbiesPlace{% endblock %}
+{% block meta_description %}Search photos, users, and categories on HerbiesPlace.{% endblock %}
+{% block layout %}
+<main class="max-w-6xl mx-auto px-4 py-10 space-y-8">
+    <section class="flex items-center justify-between gap-4">
+        <div>
+            <p class="text-sm uppercase tracking-wide text-indigo-500 font-semibold">Search</p>
+            <h1 class="text-3xl font-bold text-gray-900">Search results</h1>
+            <p class="text-gray-600 mt-2">Find users, categories, and photos.</p>
+        </div>
+        <form method="get" class="flex gap-2">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search..." class="textarea" style="max-width: 260px;">
+            <button type="submit" class="button">Search</button>
+        </form>
+    </section>
+
+    {% if not query %}
+    <div class="bg-white shadow rounded-lg p-6 text-gray-600">
+        Type to search users, categories, and photos.
+    </div>
+    {% else %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Users -->
+        <div class="bg-white shadow rounded-lg p-6 space-y-3">
+            <h2 class="text-lg font-semibold text-gray-900">Users</h2>
+            {% if users %}
+            <div class="space-y-3">
+                {% for u in users %}
+                <div class="flex items-center gap-3 border rounded-lg p-3">
+                    <img src="{{ u.profile.avatar }}" alt="{{ u.profile.name }}" class="w-10 h-10 rounded-full object-cover">
+                    <div class="min-w-0">
+                        <p class="font-medium truncate">{{ u.profile.name }}</p>
+                        <p class="text-xs text-gray-500 truncate">@{{ u.username }} · {{ u.profile.role|title }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-sm">No users found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Categories -->
+        <div class="bg-white shadow rounded-lg p-6 space-y-3">
+            <h2 class="text-lg font-semibold text-gray-900">Categories</h2>
+            {% if categories %}
+            <div class="flex flex-wrap gap-2">
+                {% for cat in categories %}
+                <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm">{{ cat.name }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-sm">No categories found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Photos -->
+        <div class="lg:col-span-1 bg-white shadow rounded-lg p-6 space-y-3">
+            <h2 class="text-lg font-semibold text-gray-900">Photos</h2>
+            {% if photos %}
+            <div class="grid grid-cols-2 gap-3">
+                {% for photo in photos %}
+                <a href="{% url 'portfolio-detail' photo.pk %}" class="block">
+                    <div class="aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-sm text-gray-700 mt-1 truncate">{{ photo.title }}</p>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-sm">No photos found.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</main>
+{% endblock %}
+
+

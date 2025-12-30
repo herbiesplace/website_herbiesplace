@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-6xl mx-auto px-4 py-10 space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">DOB Change Requests</h1>
+            <p class="text-gray-600 mt-2">Review and approve/decline date of birth change requests.</p>
+        </div>
+        <a href="{% url 'admin-dashboard' %}" class="button button-gray">Back to Dashboard</a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Pending</h2>
+            {% if pending %}
+            <div class="divide-y">
+                {% for req in pending %}
+                <div class="py-3 flex items-center justify-between">
+                    <div>
+                        <p class="font-medium">{{ req.user.profile.name }} (@{{ req.user.username }})</p>
+                        <p class="text-sm text-gray-500">Requested DOB: {{ req.requested_dob }}</p>
+                        <p class="text-xs text-gray-500">Submitted: {{ req.created_at|date:"M d, Y H:i" }}</p>
+                        {% if req.note %}<p class="text-xs text-gray-500 mt-1">Note: {{ req.note }}</p>{% endif %}
+                    </div>
+                    <div class="flex gap-2">
+                        <form method="post" action="{% url 'admin-dob-request-resolve' req.id 'approve' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="button text-sm px-3 py-1.5">Approve</button>
+                        </form>
+                        <form method="post" action="{% url 'admin-dob-request-resolve' req.id 'decline' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="button button-gray text-sm px-3 py-1.5">Decline</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-sm">No pending requests.</p>
+            {% endif %}
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-3">Recent resolved</h2>
+            {% if resolved %}
+            <div class="divide-y">
+                {% for req in resolved %}
+                <div class="py-3">
+                    <p class="font-medium">{{ req.user.profile.name }} (@{{ req.user.username }})</p>
+                    <p class="text-sm text-gray-500">Requested DOB: {{ req.requested_dob }}</p>
+                    <p class="text-xs text-gray-500">Status: {{ req.get_status_display }} on {{ req.resolved_at|date:"M d, Y H:i" }}</p>
+                    {% if req.resolved_by %}<p class="text-xs text-gray-500">By: {{ req.resolved_by.username }}</p>{% endif %}
+                    {% if req.note %}<p class="text-xs text-gray-500 mt-1">Note: {{ req.note }}</p>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-sm">No resolved requests.</p>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+

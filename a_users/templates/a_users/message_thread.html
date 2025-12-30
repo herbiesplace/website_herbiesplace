@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-4xl mx-auto px-4 py-10 space-y-6">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <img src="{{ target_user.profile.avatar }}" alt="{{ target_user.profile.name }}" class="w-12 h-12 rounded-full object-cover">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">{{ target_user.profile.name }}</h1>
+                <p class="text-sm text-gray-500">@{{ target_user.username }} · {{ target_user.profile.role|title }}</p>
+            </div>
+        </div>
+        <a href="{% url 'messages' %}" class="button button-gray">Back to Messages</a>
+    </div>
+
+    <section class="bg-white shadow rounded-lg p-6 space-y-4">
+        <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-2">
+            {% for msg in messages_thread %}
+            <div class="flex items-start gap-3 {% if msg.sender == request.user %}justify-end{% endif %}">
+                {% if msg.sender != request.user %}
+                <img src="{{ msg.sender.profile.avatar }}" alt="{{ msg.sender.profile.name }}" class="w-8 h-8 rounded-full object-cover">
+                {% endif %}
+                <div class="{% if msg.sender == request.user %}bg-indigo-50 text-indigo-900{% else %}bg-gray-100 text-gray-900{% endif %} px-3 py-2 rounded-lg max-w-xl">
+                    <p class="text-sm whitespace-pre-line">{{ msg.content }}</p>
+                    <p class="text-[11px] text-gray-500 mt-1">{{ msg.created_at|date:"M d, Y H:i" }}</p>
+                </div>
+                {% if msg.sender == request.user %}
+                <img src="{{ msg.sender.profile.avatar }}" alt="{{ msg.sender.profile.name }}" class="w-8 h-8 rounded-full object-cover">
+                {% endif %}
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-sm">No messages yet. Start the conversation.</p>
+            {% endfor %}
+        </div>
+        <form method="post" class="space-y-2">
+            {% csrf_token %}
+            <textarea name="content" rows="3" class="textarea" placeholder="Write a private message..."></textarea>
+            <div class="flex justify-end">
+                <button type="submit" class="button">Send</button>
+            </div>
+        </form>
+    </section>
+</main>
+{% endblock %}
+
+

@@ -1,0 +1,73 @@
+{% extends 'layouts/box.html' %}
+
+{% block content %}
+
+<h1 class="mb-8">Account Settings</h1>
+
+<table class="w-full text-sm text-left text-gray-500 space-y-2">
+    <tbody>
+        <tr>
+            <th scope="row" class="pt-4 pb-1 text-base font-bold text-gray-900">
+                Email address
+            </th>
+            <td id="email-address" class="pt-4 pb-1 pl-4">
+                {% if user.email %}{{ user.email }}{% else %}No Email{% endif %}
+            </td>
+            <td class="pt-4 pb-1 pl-4">
+                <a id="email-edit" class="cursor-pointer font-medium text-blue-600 hover:underline"
+                    hx-get="{% url 'profile-emailchange' %}"
+                    hx-target="#email-address"
+                    hx-swap="innerHTML" >
+                    Edit
+                </a>
+            </td>
+        </tr>
+        <tr class="border-b">
+            <th scope="row" class="pb-4 font-medium text-gray-900">  
+            </th>
+            <td class="pb-4 pl-4">
+                {% if user.emailaddress_set.first.verified %}
+                <span class="text-green-500">Verified</span>{% else %}
+                <span class="text-amber-500">Not verified</span>
+                {% endif %}
+            </td>
+            <td class="pb-4 pl-4">
+                <a href="{% url 'profile-emailverify' %}" class="font-medium text-blue-600 hover:underline">
+                    {% if not user.emailaddress_set.first.verified %}Verify{% endif %}
+                </a>
+            </td>
+        </tr>
+
+        <tr class="border-b">
+            <th scope="row" class="py-4 text-base font-bold text-gray-900">
+                Delete Account
+            </th>
+            <td class="py-4 pl-4">
+                Once deleted, account is gone. Forever.
+            </td>
+            <td class="py-4 pl-4">
+                <a href="{% url 'profile-delete' %}" class="font-medium text-red-600 hover:underline">
+                    Delete
+                </a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="mt-8 space-y-3">
+    <h2 class="text-lg font-semibold text-gray-900">Date of birth</h2>
+    <p class="text-sm text-gray-600">DOB is locked after verification. Request a change if needed.</p>
+    <div class="flex items-center gap-4">
+        <span class="text-sm text-gray-800">
+            {% if user.profile.date_of_birth %}{{ user.profile.date_of_birth }}{% else %}Not set{% endif %}
+        </span>
+        {% if user.profile.dob_change_pending %}
+        <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs">Pending review</span>
+        {% else %}
+        <a href="{% url 'dob-change-request' %}" class="button button-gray text-sm px-3 py-1.5">Request change</a>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

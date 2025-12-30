@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-2xl mx-auto px-4 py-10 space-y-6">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Delete Photo: {{ photo.title }}</h1>
+        <p class="text-gray-600 mt-2">This action cannot be undone.</p>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="mb-6">
+            <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="w-full max-w-md rounded-lg">
+        </div>
+        <div class="mb-4">
+            <p class="font-medium mb-2">{{ photo.title }}</p>
+            <p class="text-sm text-gray-500">Owner: {{ photo.owner.profile.name }}</p>
+        </div>
+
+        <p class="text-red-600 font-medium mb-4">Are you sure you want to delete this photo?</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex gap-3">
+                <button type="submit" class="button alert">Delete Photo</button>
+                <a href="{% url 'admin-photos' %}" class="button button-gray">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
+

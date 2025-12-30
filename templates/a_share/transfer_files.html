@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block meta_title %}Download shared files · HerbiesPlace{% endblock %}
+{% block layout %}
+<main class="max-w-3xl mx-auto px-4 py-10 space-y-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-bold text-gray-900">Download files</h1>
+    {% if transfer.title %}
+      <p class="text-gray-800 font-medium">{{ transfer.title }}</p>
+    {% endif %}
+    {% if transfer.message %}
+      <p class="text-gray-600 text-sm whitespace-pre-line">{{ transfer.message }}</p>
+    {% endif %}
+    <p class="text-xs text-gray-500">
+      Shared by {{ transfer.owner.email|default:transfer.owner.username }} ·
+      Expires on {{ transfer.expires_at|date:"Y-m-d H:i" }} (UTC).
+    </p>
+  </header>
+
+  <section class="bg-white shadow rounded-xl p-6">
+    <h2 class="text-sm font-semibold text-gray-700 mb-3">Files</h2>
+    <ul class="divide-y divide-gray-200">
+      {% for f in files %}
+      <li class="flex items-center justify-between py-2">
+        <div class="min-w-0">
+          <p class="text-sm text-gray-900 truncate">{{ f.original_name }}</p>
+        </div>
+        <a href="{% url 'share:download-file' token=transfer.token file_id=f.id %}" class="button text-xs py-1 px-3">
+          Download
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
+    <p class="text-sm text-gray-700">
+      When you are sure you have downloaded everything you need, you can finish this transfer.
+      This will delete the files from the platform earlier than the normal expiry date.
+    </p>
+    <form method="post" action="{% url 'share:finish' token=transfer.token %}">
+      {% csrf_token %}
+      <button type="submit" class="button button-red">
+        I’m finished – delete the files
+      </button>
+    </form>
+  </section>
+</main>
+{% endblock %}
+
+

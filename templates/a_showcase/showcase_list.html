@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-semibold text-gray-100">Showcase</h1>
+    <a
+      href="{% url 'showcase:upload' %}"
+      class="inline-flex items-center px-3 py-1.5 rounded-md bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700"
+    >
+      Upload images
+    </a>
+  </div>
+
+  <div id="showcase-grid">
+    {% include "a_showcase/partials/showcase_grid.html" %}
+  </div>
+</div>
+{% endblock %}
+
+

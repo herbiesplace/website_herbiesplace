@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block meta_title %}Terms & Conditions · HerbiesPlace{% endblock %}
+{% block meta_description %}General terms & conditions and rules for posting images on HerbiesPlace, including consent, age and nudity restrictions.{% endblock %}
+{% block layout %}
+<main class="max-w-4xl mx-auto px-4 py-10 space-y-8">
+  <header class="space-y-2">
+    <h1 class="text-3xl font-bold text-gray-900">Terms & Conditions</h1>
+    <p class="text-gray-600 text-sm">
+      This page explains the basic terms for using HerbiesPlace and the rules for uploading and sharing photos.
+      It is intended as a clear summary, not a replacement for professional legal advice.
+    </p>
+  </header>
+
+  <!-- 1. General Use -->
+  <section class="bg-white shadow rounded-lg p-6 space-y-3">
+    <h2 class="text-2xl font-semibold text-gray-900">1. General Use of the Platform</h2>
+    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4 text-sm">
+      <li>HerbiesPlace is a showcase platform for photographers, models and makeup artists.</li>
+      <li>You are responsible for everything you upload and share on your account.</li>
+      <li>You may not use the platform for illegal activities, harassment, hate speech or spam.</li>
+      <li>We may remove content or restrict accounts that violate these terms or our community guidelines.</li>
+    </ul>
+  </section>
+
+  <!-- 2. Age & Identity -->
+  <section class="bg-white shadow rounded-lg p-6 space-y-3">
+    <h2 class="text-2xl font-semibold text-gray-900">2. Age & Identity</h2>
+    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4 text-sm">
+      <li>You must be at least <strong>18 years old</strong> to create an account.</li>
+      <li>You must provide a correct date of birth. Age is used to protect minors and to gate adult content.</li>
+      <li>You may not create accounts on behalf of minors or upload images of minors in sexual or suggestive contexts.</li>
+    </ul>
+  </section>
+
+  <!-- 3. Consent & Model Rights -->
+  <section class="bg-white shadow rounded-lg p-6 space-y-3">
+    <h2 class="text-2xl font-semibold text-gray-900">3. Consent & Model Rights</h2>
+    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4 text-sm">
+      <li>You may only upload photos of people who have <strong>given you permission</strong> to publish those images.</li>
+      <li>For any portrait, fashion, boudoir or similar work, you are responsible for having the correct model releases and agreements.</li>
+      <li>You may not upload compromising, humiliating or invasive photos of a person without their clear consent.</li>
+      <li>On request of a person pictured on the platform, we may remove photos that reasonably violate their privacy or rights.</li>
+    </ul>
+  </section>
+
+  <!-- 4. Nudity & Sensitive Content -->
+  <section class="bg-white shadow rounded-lg p-6 space-y-3">
+    <h2 class="text-2xl font-semibold text-gray-900">4. Nudity & Sensitive Content</h2>
+    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4 text-sm">
+      <li><strong>No explicit nudity</strong> may be posted in public galleries that are visible to everyone.</li>
+      <li>Full nudity, explicit sexual content or fetish content is <strong>not allowed</strong> anywhere on the platform.</li>
+      <li>Boudoir or lingerie work must remain tasteful and may only feature models who are 18+ and have given consent.</li>
+      <li>Adult-themed work must be placed in the correct category and will only be visible to verified adult users who enabled adult content.</li>
+    </ul>
+  </section>
+
+  <!-- 5. Copyright & Ownership -->
+  <section class="bg-white shadow rounded-lg p-6 space-y-3">
+    <h2 class="text-2xl font-semibold text-gray-900">5. Copyright & Ownership</h2>
+    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4 text-sm">
+      <li>Only upload photos that you created yourself or for which you have the necessary rights and permissions.</li>
+      <li>Do not upload images that infringe on someone else’s copyright, trademarks or intellectual property.</li>
+      <li>You keep the copyright to your work. By uploading, you grant HerbiesPlace a limited license to display your images on the platform.</li>
+    </ul>
+  </section>
+
+  <!-- 6. Prohibited Content -->
+  <section class="bg-white shadow rounded-lg p-6 space-y-3">
+    <h2 class="text-2xl font-semibold text-gray-900">6. Prohibited Content</h2>
+    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4 text-sm">
+      <li>No content involving minors in sexual, suggestive or unsafe situations.</li>
+      <li>No revenge porn, hidden-camera images or other non‑consensual intimate material.</li>
+      <li>No hateful, violent, extremely graphic or illegal content.</li>
+      <li>No doxxing or publishing private information (addresses, phone numbers, IDs, etc.).</li>
+    </ul>
+  </section>
+
+  <!-- 7. Enforcement & Reporting -->
+  <section class="bg-white shadow rounded-lg p-6 space-y-3">
+    <h2 class="text-2xl font-semibold text-gray-900">7. Enforcement & Reporting</h2>
+    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4 text-sm">
+      <li>Content that breaks these rules may be edited, hidden or removed by staff without prior notice.</li>
+      <li>Accounts that repeatedly or seriously violate these terms may be suspended or banned.</li>
+      <li>If you see content that violates these rules, please report it via the <a href="{% url 'contact' %}" class="text-indigo-600 hover:underline">contact form</a>.</li>
+    </ul>
+  </section>
+
+  <!-- 8. Changes to These Terms -->
+  <section class="bg-white shadow rounded-lg p-6 space-y-3">
+    <h2 class="text-2xl font-semibold text-gray-900">8. Changes to These Terms</h2>
+    <p class="text-gray-700 text-sm">
+      We may update these terms from time to time to reflect changes in the platform or in the law.
+      When we make important changes, we will update this page and, where appropriate, notify active users.
+    </p>
+  </section>
+</main>
+{% endblock %}
+
+

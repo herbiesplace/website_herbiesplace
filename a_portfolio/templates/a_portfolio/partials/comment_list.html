@@ -1,0 +1,55 @@
+<div class="space-y-4">
+    {% for comment in comments %}
+    <div class="border-b pb-4 last:border-0">
+        <div class="flex items-start gap-3">
+            <img src="{{ comment.user.profile.avatar }}" alt="{{ comment.user.profile.name }}" class="w-10 h-10 rounded-full object-cover flex-shrink-0">
+            <div class="flex-1">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-2">
+                        <span class="font-medium">{{ comment.user.profile.name }}</span>
+                        <span class="text-xs text-gray-500">{{ comment.created_at|timesince }} ago</span>
+                    </div>
+                    {% if request.user == comment.user or request.user == photo.owner or request.user.is_staff %}
+                    <form method="post" action="{% url 'portfolio-comment-delete' photo.pk comment.pk %}" hx-post="{% url 'portfolio-comment-delete' photo.pk comment.pk %}" hx-target="#comments-section" hx-swap="innerHTML" class="inline">
+                        {% csrf_token %}
+                        <button type="submit" class="text-xs text-red-600 hover:text-red-800">Delete</button>
+                    </form>
+                    {% endif %}
+                </div>
+                <p class="text-gray-700 whitespace-pre-line">{{ comment.content }}</p>
+                
+                {% if request.user.is_authenticated and request.user == photo.owner %}
+                <button onclick="showReplyForm({{ comment.pk }})" class="text-xs text-indigo-600 hover:text-indigo-800 mt-2">Reply</button>
+                <div id="reply-form-{{ comment.pk }}" class="hidden mt-3">
+                    <form method="post" action="{% url 'portfolio-comment' photo.pk %}" hx-post="{% url 'portfolio-comment' photo.pk %}" hx-target="#replies-{{ comment.pk }}" hx-swap="innerHTML">
+                        {% csrf_token %}
+                        <input type="hidden" name="parent_id" value="{{ comment.pk }}">
+                        <textarea name="content" rows="2" class="w-full rounded-lg py-2 px-3 bg-gray-100 text-sm" placeholder="Write a reply..."></textarea>
+                        <div class="flex gap-2 mt-2">
+                            <button type="submit" class="text-sm px-4 py-1 bg-indigo-600 text-white rounded-lg">Reply</button>
+                            <button type="button" onclick="hideReplyForm({{ comment.pk }})" class="text-sm px-4 py-1 bg-gray-200 text-gray-700 rounded-lg">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                {% endif %}
+                
+                <div id="replies-{{ comment.pk }}">
+                    {% include "a_portfolio/partials/comment_replies.html" with comment=comment photo=photo %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-gray-500 text-center py-4">No comments yet. Be the first to comment!</p>
+    {% endfor %}
+</div>
+
+<script>
+function showReplyForm(commentId) {
+    document.getElementById('reply-form-' + commentId).classList.remove('hidden');
+}
+function hideReplyForm(commentId) {
+    document.getElementById('reply-form-' + commentId).classList.add('hidden');
+}
+</script>
+

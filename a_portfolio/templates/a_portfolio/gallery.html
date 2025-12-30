@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block meta_title %}Showcase · Public gallery{% endblock %}
+{% block meta_description %}Browse public showcase photos sorted by date. Discover creative work across categories on HerbiesPlace.{% endblock %}
+{% block layout %}
+<main class="max-w-6xl mx-auto px-4 py-10 space-y-8">
+    <section class="flex items-center justify-between gap-4">
+        <div>
+            <p class="text-sm uppercase tracking-wide text-indigo-500 font-semibold">Showcase</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Latest shots</h1>
+            <p class="text-gray-600 mt-2">Public and shared photos sorted by date.</p>
+        </div>
+        <div class="flex gap-2">
+            {% if request.user.is_authenticated %}
+                {% if request.user.is_staff or request.user.profile.can_upload_portfolio %}
+                <a href="{% url 'portfolio-upload' %}" class="button">Upload</a>
+                {% endif %}
+                <a href="{% url 'portfolio-private' %}" class="button">Private Workspace</a>
+                {% if request.user.is_staff or request.user.profile.can_upload_portfolio %}
+                <a href="{% url 'portfolio-category-new' %}" class="button">New Category</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="flex flex-wrap items-center gap-3">
+        <a href="{% url 'portfolio' %}" class="px-4 py-2 rounded-full border {% if not selected_category %}bg-indigo-600 text-white{% else %}bg-white text-gray-700{% endif %}">All</a>
+        {% for category in categories %}
+        <a href="?category={{ category.slug }}" class="px-4 py-2 rounded-full border {% if selected_category and selected_category.id == category.id %}bg-indigo-600 text-white{% else %}bg-white text-gray-700{% endif %}">
+            {{ category.name }}
+        </a>
+        {% empty %}
+        <span class="text-gray-500 text-sm">No categories yet.</span>
+        {% endfor %}
+    </section>
+
+    {% include "a_portfolio/partials/photo_grid.html" with photos=photos requires_login=requires_login|default:False %}
+</main>
+
+<!-- Lightbox Modal -->
+<div id="lightbox-modal" class="fixed inset-0 bg-black bg-opacity-100 z-50 hidden flex items-center justify-center p-4">
+    <div class="relative max-w-7xl max-h-full">
+        <button id="lightbox-close" class="absolute top-4 right-4 text-white hover:text-gray-300 text-4xl font-bold z-20 bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center">×</button>
+
+        <!-- Previous / Next arrows -->
+        <button id="lightbox-prev" class="hidden md:flex items-center justify-center absolute left-3 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 hover:bg-opacity-60 text-white rounded-full w-10 h-10 z-20 shadow-lg">
+            <span class="text-xl font-semibold leading-none">&lt;</span>
+        </button>
+        <button id="lightbox-next" class="hidden md:flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 hover:bg-opacity-60 text-white rounded-full w-10 h-10 z-20 shadow-lg">
+            <span class="text-xl font-semibold leading-none">&gt;</span>
+        </button>
+
+        <img id="lightbox-image" src="" alt="" class="max-w-full max-h-[90vh] object-contain rounded-lg">
+        <a id="lightbox-detail-link" href="#" class="absolute bottom-4 right-4 text-white hover:text-gray-200 text-sm bg-black bg-opacity-40 hover:bg-opacity-60 px-4 py-2 rounded-lg transition">View Details</a>
+    </div>
+</div>
+{% endblock %}
+

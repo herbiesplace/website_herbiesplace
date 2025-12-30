@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-7xl mx-auto px-4 py-10 space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Photo Management</h1>
+            <p class="text-gray-600 mt-2">Manage all photos in the showcase</p>
+        </div>
+        <a href="{% url 'admin-dashboard' %}" class="button button-gray">Back to Dashboard</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <form method="get" class="flex flex-wrap gap-4">
+            <input type="text" name="search" value="{{ search }}" placeholder="Search photos..." class="textarea" style="max-width: 300px;">
+            <select name="owner" class="textarea" style="max-width: 200px; color: #111827;">
+                <option value="">All Owners</option>
+                {% for owner in owners %}
+                <option value="{{ owner.username }}" {% if owner_filter == owner.username %}selected{% endif %}>{{ owner.username }}</option>
+                {% endfor %}
+            </select>
+            <select name="category" class="textarea" style="max-width: 200px; color: #111827;">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.slug }}" {% if category_filter == cat.slug %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            <select name="visibility" class="textarea" style="max-width: 200px; color: #111827;">
+                <option value="">All Visibility</option>
+                {% for value, label in visibility_choices %}
+                <option value="{{ value }}" {% if visibility_filter == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="button">Filter</button>
+            {% if search or owner_filter or category_filter or visibility_filter %}
+            <a href="{% url 'admin-photos' %}" class="button button-gray">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <form method="post" action="{% url 'admin-photos-bulk-delete' %}" class="space-y-3">
+        {% csrf_token %}
+        <!-- Photos Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for photo in photos %}
+            <div class="bg-white shadow rounded-lg overflow-hidden relative">
+                <label class="absolute top-2 left-2 z-10 bg-white rounded-full shadow px-2 py-1 flex items-center gap-1 text-xs">
+                    <input type="checkbox" name="photo_ids" value="{{ photo.id }}" class="photo-select checkbox">
+                    Select
+                </label>
+                <a href="{% url 'admin-photo-edit' photo.id %}">
+                    <div class="aspect-[4/3] bg-gray-100 overflow-hidden">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="w-full h-full object-cover">
+                    </div>
+                </a>
+                <div class="p-4 space-y-2">
+                    <h3 class="font-semibold text-gray-900 truncate">{{ photo.title }}</h3>
+                    <div class="flex items-center gap-2 text-xs">
+                        <img src="{{ photo.owner.profile.avatar }}" alt="{{ photo.owner.profile.name }}" class="w-5 h-5 rounded-full object-cover">
+                        <span class="text-gray-500">{{ photo.owner.profile.name }}</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-2 border-t">
+                        <span class="text-xs text-gray-500 capitalize">{{ photo.visibility }}</span>
+                        <div class="flex gap-2">
+                            <a href="{% url 'admin-photo-edit' photo.id %}" class="text-indigo-600 hover:underline text-xs">Edit</a>
+                            <a href="{% url 'admin-photo-delete' photo.id %}" class="text-red-600 hover:underline text-xs">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center text-gray-500 py-12 border border-dashed rounded-lg">
+                No photos found.
+            </div>
+            {% endfor %}
+        </div>
+        <div id="admin-bulk-toolbar" class="hidden flex items-center gap-3 bg-white border rounded-lg shadow px-4 py-3">
+            <span class="text-sm text-gray-700" id="admin-bulk-count">0 selected</span>
+            <button type="submit" class="button button-red text-sm px-3 py-1.5">Delete selected</button>
+        </div>
+    </form>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const checkboxes = Array.from(document.querySelectorAll('.photo-select'));
+    const toolbar = document.getElementById('admin-bulk-toolbar');
+    const countEl = document.getElementById('admin-bulk-count');
+    if (!checkboxes.length || !toolbar) return;
+    function update() {
+        const selected = checkboxes.filter(cb => cb.checked).length;
+        toolbar.classList.toggle('hidden', selected === 0);
+        countEl.textContent = `${selected} selected`;
+    }
+    checkboxes.forEach(cb => cb.addEventListener('change', update));
+});
+</script>
+{% endblock %}
+

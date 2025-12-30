@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-xl mx-auto px-4 py-10 space-y-6">
+    <div class="bg-white shadow rounded-lg p-6 space-y-4">
+        <h1 class="text-2xl font-bold text-gray-900">Confirm {{ decision|title }}</h1>
+        <p class="text-gray-600">Resolve DOB change request for {{ dob_req.user.profile.name }} (@{{ dob_req.user.username }}).</p>
+
+        <div class="border rounded-lg p-4 bg-gray-50 space-y-2">
+            <p><span class="font-semibold">Requested DOB:</span> {{ dob_req.requested_dob }}</p>
+            <p><span class="font-semibold">Status:</span> {{ dob_req.get_status_display }}</p>
+            <p><span class="font-semibold">Submitted:</span> {{ dob_req.created_at|date:"M d, Y H:i" }}</p>
+            {% if dob_req.note %}<p><span class="font-semibold">Note:</span> {{ dob_req.note }}</p>{% endif %}
+        </div>
+
+        <form method="post" class="flex gap-3">
+            {% csrf_token %}
+            <button type="submit" class="button">{% if decision == "approve" %}Approve{% else %}Decline{% endif %}</button>
+            <a href="{% url 'admin-dob-requests' %}" class="button button-gray">Cancel</a>
+        </form>
+    </div>
+</main>
+{% endblock %}
+
+

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-7xl mx-auto px-4 py-10 space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Category Management</h1>
+            <p class="text-gray-600 mt-2">Manage all categories and their adult-only settings</p>
+        </div>
+        <a href="{% url 'admin-dashboard' %}" class="button button-gray">Back to Dashboard</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <form method="get" class="flex flex-wrap gap-4">
+            <input type="text" name="search" value="{{ search }}" placeholder="Search categories..." class="textarea" style="max-width: 300px;">
+            <select name="adult_only" class="textarea" style="max-width: 200px; color: #111827;">
+                <option value="">All Categories</option>
+                <option value="yes" {% if adult_filter == "yes" %}selected{% endif %}>Adult Only</option>
+                <option value="no" {% if adult_filter == "no" %}selected{% endif %}>Not Adult Only</option>
+            </select>
+            <button type="submit" class="button">Filter</button>
+            {% if search or adult_filter %}
+            <a href="{% url 'admin-categories' %}" class="button button-gray">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Categories List -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Slug</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adult Only</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Photos</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for category in categories %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ category.name }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">{{ category.slug }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if category.is_adult_only %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">Adult Only</span>
+                        {% else %}
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Regular</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ category.photo_count }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">{{ category.created_at|date:"M d, Y" }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{% url 'admin-category-edit' category.id %}" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</a>
+                        <a href="{% url 'admin-category-delete' category.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">No categories found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}
+

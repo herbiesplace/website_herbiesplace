@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-3xl mx-auto px-4 py-10 space-y-6">
+    <div>
+        <p class="text-sm uppercase tracking-wide text-indigo-500 font-semibold">Upload</p>
+        <h1 class="text-3xl font-bold">Add a photo</h1>
+        <p class="text-gray-600 mt-2">
+            Need a new category? 
+            <a href="{% url 'portfolio-category-new' %}" class="text-indigo-600 underline">Create one here</a>
+        </p>
+    </div>
+    {% if not request.user.is_staff and not request.user.profile.can_upload_portfolio %}
+    <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+        Your role cannot upload photos. Please contact staff to change your role.
+    </div>
+    {% endif %}
+    {% include "a_portfolio/partials/photo_form.html" with form=form %}
+</main>
+{% endblock %}
+

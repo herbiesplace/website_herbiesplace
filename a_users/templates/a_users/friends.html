@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-6xl mx-auto px-4 py-10 space-y-8">
+    <div class="flex items-center justify-between gap-4">
+        <div>
+            <p class="text-sm uppercase tracking-wide text-indigo-500 font-semibold">Connections</p>
+            <h1 class="text-3xl font-bold text-gray-900">My Network</h1>
+            <p class="text-gray-600 mt-2">Find members, send requests, and manage your connections.</p>
+        </div>
+        <a href="{% url 'profile' %}" class="button button-gray">Back to Profile</a>
+    </div>
+
+    <!-- Search -->
+    <div class="bg-white shadow rounded-lg p-6 space-y-4">
+        <form method="get" class="flex flex-wrap gap-3 items-center">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Search users by name or username..." class="textarea" style="max-width: 320px;">
+            <button type="submit" class="button">Search</button>
+            {% if search_query %}
+            <a href="{% url 'friends' %}" class="button button-gray">Clear</a>
+            {% endif %}
+        </form>
+        {% if search_query %}
+        <div>
+            <h3 class="text-sm font-semibold text-gray-700 mb-2">Results</h3>
+            {% if search_results %}
+            <div class="divide-y">
+                {% for user in search_results %}
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ user.profile.avatar }}" alt="{{ user.profile.name }}" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="font-medium">{{ user.profile.name }}</p>
+                            <p class="text-xs text-gray-500">@{{ user.username }} · {{ user.profile.role|title }}</p>
+                        </div>
+                    </div>
+                    <form method="post" action="{% url 'friend-request-send' user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="button text-sm px-4 py-2">Connect</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-sm">No users found.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Pending Requests -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Requests to You</h3>
+            {% if incoming %}
+            <div class="divide-y">
+                {% for fr in incoming %}
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ fr.from_user.profile.avatar }}" alt="{{ fr.from_user.profile.name }}" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="font-medium">{{ fr.from_user.profile.name }}</p>
+                            <p class="text-xs text-gray-500">@{{ fr.from_user.username }} · {{ fr.from_user.profile.role|title }}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <form method="post" action="{% url 'friend-request-accept' fr.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="button text-sm px-3 py-1.5">Accept</button>
+                        </form>
+                        <form method="post" action="{% url 'friend-request-decline' fr.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="button button-gray text-sm px-3 py-1.5">Decline</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-sm">No incoming requests.</p>
+            {% endif %}
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">Requests You Sent</h3>
+            {% if outgoing %}
+            <div class="divide-y">
+                {% for fr in outgoing %}
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center gap-3">
+                        <img src="{{ fr.to_user.profile.avatar }}" alt="{{ fr.to_user.profile.name }}" class="w-10 h-10 rounded-full object-cover">
+                        <div>
+                            <p class="font-medium">{{ fr.to_user.profile.name }}</p>
+                            <p class="text-xs text-gray-500">@{{ fr.to_user.username }} · {{ fr.to_user.profile.role|title }}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-gray-500">Pending</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-sm">No outgoing requests.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Friends List -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-3">Your Connections</h3>
+        {% if friends %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for friend in friends %}
+            <a href="{% url 'friend-detail' friend.user.username %}" class="flex items-center gap-3 border rounded-lg p-3 hover:bg-gray-50 transition">
+                <img src="{{ friend.avatar }}" alt="{{ friend.name }}" class="w-10 h-10 rounded-full object-cover">
+                <div class="min-w-0">
+                    <p class="font-medium truncate">{{ friend.name }}</p>
+                    <p class="text-xs text-gray-500 truncate">@{{ friend.user.username }} · {{ friend.role|title }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500 text-sm">No connections yet.</p>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
+
+

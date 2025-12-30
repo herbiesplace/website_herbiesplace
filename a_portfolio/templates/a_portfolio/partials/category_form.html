@@ -1,0 +1,16 @@
+<form method="post" class="space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <label class="space-y-1 block">
+        <span class="text-sm font-medium text-gray-700">{{ field.label }}</span>
+        {{ field }}
+        {{ field.errors }}
+    </label>
+    {% endfor %}
+    <div class="flex gap-3">
+        <button type="submit" class="button">Save</button>
+        <a href="{% url 'portfolio' %}" class="button button-gray">Cancel</a>
+    </div>
+</form>
+

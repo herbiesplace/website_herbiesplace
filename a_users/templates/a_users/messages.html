@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-5xl mx-auto px-4 py-10 space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <p class="text-sm uppercase tracking-wide text-indigo-500 font-semibold">Messages</p>
+            <h1 class="text-3xl font-bold text-gray-900">Inbox</h1>
+        </div>
+        <a href="{% url 'friends' %}" class="button button-gray">Connections</a>
+    </div>
+
+    <div class="bg-white shadow rounded-lg divide-y">
+        {% if threads %}
+            {% for thread in threads %}
+            <a href="{% url 'message-thread' thread.user.username %}" class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <img src="{{ thread.user.profile.avatar }}" alt="{{ thread.user.profile.name }}" class="w-10 h-10 rounded-full object-cover">
+                        {% if thread.unread_count > 0 %}
+                        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">{{ thread.unread_count }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="font-medium truncate">{{ thread.user.profile.name }}</p>
+                        <p class="text-xs text-gray-500 truncate">@{{ thread.user.username }} · {{ thread.user.profile.role|title }}</p>
+                        <p class="text-sm text-gray-700 truncate mt-1">
+                            {% if thread.last_message.sender == request.user %}You:{% endif %}
+                            {{ thread.last_message.content }}
+                        </p>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 whitespace-nowrap">
+                    {{ thread.last_message.created_at|date:"M d, Y H:i" }}
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+        <div class="px-4 py-6 text-center text-gray-500">No messages yet.</div>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
+
+

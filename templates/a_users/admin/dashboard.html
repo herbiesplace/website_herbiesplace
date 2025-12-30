@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-7xl mx-auto px-4 py-10 space-y-8">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <p class="text-gray-600 mt-2">Manage users, photos, and monitor activity</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="text-sm text-gray-500 uppercase tracking-wide">Total Users</div>
+            <div class="text-3xl font-bold text-gray-900 mt-2">{{ total_users }}</div>
+        </div>
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="text-sm text-gray-500 uppercase tracking-wide">Total Photos</div>
+            <div class="text-3xl font-bold text-gray-900 mt-2">{{ total_photos }}</div>
+        </div>
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="text-sm text-gray-500 uppercase tracking-wide">Categories</div>
+            <div class="text-3xl font-bold text-gray-900 mt-2">{{ total_categories }}</div>
+        </div>
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="text-sm text-gray-500 uppercase tracking-wide">Active Users</div>
+            <div class="text-3xl font-bold text-indigo-600 mt-2">{{ active_count }}</div>
+        </div>
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="text-sm text-gray-500 uppercase tracking-wide">Total Comments</div>
+            <div class="text-3xl font-bold text-gray-900 mt-2">{{ total_comments }}</div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'admin-users' %}" class="button">Manage Users</a>
+            <a href="{% url 'admin-photos' %}" class="button">Manage Photos</a>
+            <a href="{% url 'admin-categories' %}" class="button">Manage Categories</a>
+            <a href="{% url 'admin-comments' %}" class="button">Manage Comments</a>
+            <a href="{% url 'admin-dob-requests' %}" class="button">DOB Requests</a>
+        </div>
+    </div>
+
+    <!-- Active Users -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <h2 class="text-xl font-bold mb-4">Currently Active Users</h2>
+        {% if active_users %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {% for user in active_users %}
+            <div class="flex items-center gap-3 p-3 border rounded-lg">
+                <img src="{{ user.profile.avatar }}" alt="{{ user.profile.name }}" class="w-10 h-10 rounded-full object-cover">
+                <div class="flex-1">
+                    <p class="font-medium">{{ user.profile.name }}</p>
+                    <p class="text-sm text-gray-500 capitalize">{{ user.profile.role }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500">No active users at the moment.</p>
+        {% endif %}
+    </div>
+
+    <!-- Recent Photos -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold">Recent Photos</h2>
+            <a href="{% url 'admin-photos' %}" class="text-indigo-600 hover:underline">View All</a>
+        </div>
+        {% if recent_photos %}
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {% for photo in recent_photos %}
+            <a href="{% url 'admin-photo-edit' photo.id %}" class="block">
+                <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                    <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="w-full h-full object-cover">
+                </div>
+                <p class="text-xs text-gray-600 mt-1 truncate">{{ photo.title }}</p>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500">No photos yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Recent Users -->
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold">Recent Users</h2>
+            <a href="{% url 'admin-users' %}" class="text-indigo-600 hover:underline">View All</a>
+        </div>
+        {% if recent_users %}
+        <div class="space-y-2">
+            {% for user in recent_users %}
+            <div class="flex items-center justify-between p-3 border rounded-lg">
+                <div class="flex items-center gap-3">
+                    <img src="{{ user.profile.avatar }}" alt="{{ user.profile.name }}" class="w-10 h-10 rounded-full object-cover">
+                    <div>
+                        <p class="font-medium">{{ user.profile.name }}</p>
+                        <p class="text-sm text-gray-500 capitalize">{{ user.profile.role }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'admin-user-edit' user.id %}" class="text-indigo-600 hover:underline text-sm">Edit</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500">No users yet.</p>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}
+

@@ -1,0 +1,148 @@
+{% with enable_bulk=enable_bulk|default:False bulk_action_url=bulk_action_url|default:'' %}
+<form method="post" action="{{ bulk_action_url }}" class="space-y-3" {% if not enable_bulk %}onsubmit="return true;"{% endif %}>
+    {% if enable_bulk %}{% csrf_token %}{% endif %}
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {% for photo in photos %}
+        <div class="relative">
+            {% if enable_bulk %}
+            <label class="absolute top-2 left-2 z-10 bg-white rounded-full shadow px-2 py-1 flex items-center gap-1 text-xs">
+                <input type="checkbox" name="photo_ids" value="{{ photo.id }}" class="photo-select checkbox">
+                Select
+            </label>
+            {% endif %}
+            {% include "a_portfolio/partials/photo_card.html" with photo=photo %}
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center text-gray-500 py-12 border border-dashed rounded-lg space-y-4">
+            {% if requires_login %}
+                <div class="max-w-md mx-auto space-y-3">
+                    <p class="text-lg font-semibold text-gray-900">This category requires you to be logged in</p>
+                    <p class="text-gray-600">Please <a href="{% url 'account_login' %}" class="text-indigo-600 underline font-medium">log in</a> or <a href="{% url 'account_signup' %}" class="text-indigo-600 underline font-medium">sign up</a> to view photos in this category.</p>
+                </div>
+            {% elif request.user.is_authenticated %}
+                {% if request.user.is_staff or request.user.profile.can_upload_portfolio %}
+                <div>No photos yet. <a href="{% url 'portfolio-upload' %}" class="text-indigo-600 underline">Upload one</a>.</div>
+                <div class="max-w-md mx-auto text-left bg-indigo-50 border border-indigo-100 rounded-lg p-4 space-y-2">
+                    <p class="font-semibold text-indigo-900 text-sm">Onboarding checklist</p>
+                    <ul class="text-sm text-indigo-900 space-y-1">
+                        <li>• Add an avatar in <a class="underline" href="{% url 'profile-edit' %}">Edit Profile</a></li>
+                        <li>• Upload your first photo</li>
+                        <li>• Set your role (Photographer/Model/MUA) in profile</li>
+                        <li>• Connect with friends in <a class="underline" href="{% url 'friends' %}">Connections</a></li>
+                    </ul>
+                </div>
+                {% else %}
+                No pictures yet available here.
+                {% endif %}
+            {% else %}
+            No pictures yet available here.
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if enable_bulk %}
+    <div id="bulk-toolbar" class="hidden flex items-center gap-3 bg-white border rounded-lg shadow px-4 py-3">
+        <span class="text-sm text-gray-700" id="bulk-count">0 selected</span>
+        <button type="submit" class="button button-red text-sm px-3 py-1.5">Delete selected</button>
+    </div>
+    {% endif %}
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Lightbox navigation with keyboard support
+    const triggers = Array.from(document.querySelectorAll('.lightbox-trigger'));
+    const modal = document.getElementById('lightbox-modal');
+    const imgEl = document.getElementById('lightbox-image');
+    const detailLink = document.getElementById('lightbox-detail-link');
+    const prevBtn = document.getElementById('lightbox-prev');
+    const nextBtn = document.getElementById('lightbox-next');
+    const closeBtn = document.getElementById('lightbox-close');
+    if (!modal || !imgEl || !detailLink || !triggers.length) return;
+    let currentIndex = -1;
+
+    function showSlide(idx) {
+        if (idx < 0 || idx >= triggers.length) return;
+        currentIndex = idx;
+        const t = triggers[idx];
+        imgEl.src = t.dataset.image;
+        detailLink.href = t.dataset.detailUrl;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+    function nextSlide(delta) {
+        if (currentIndex === -1) return;
+        let idx = currentIndex + delta;
+        if (idx < 0) idx = triggers.length - 1;
+        if (idx >= triggers.length) idx = 0;
+        showSlide(idx);
+    }
+
+    triggers.forEach((t, idx) => {
+        t.addEventListener('click', (e) => {
+            e.preventDefault();
+            showSlide(idx);
+        });
+    });
+
+    // Click backdrop to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeLightbox();
+        }
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeLightbox();
+        });
+    }
+    if (prevBtn) {
+        prevBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            nextSlide(-1);
+        });
+    }
+    if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            nextSlide(1);
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (modal.classList.contains('hidden')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight') nextSlide(1);
+        if (e.key === 'ArrowLeft') nextSlide(-1);
+    });
+});
+
+// Bulk selection toolbar
+document.addEventListener('DOMContentLoaded', () => {
+    const checkboxes = Array.from(document.querySelectorAll('.photo-select'));
+    const toolbar = document.getElementById('bulk-toolbar');
+    const countEl = document.getElementById('bulk-count');
+    if (!checkboxes.length || !toolbar) return;
+
+    function update() {
+        const selected = checkboxes.filter(cb => cb.checked).length;
+        if (selected > 0) {
+            toolbar.classList.remove('hidden');
+            countEl.textContent = `${selected} selected`;
+        } else {
+            toolbar.classList.add('hidden');
+            countEl.textContent = '0 selected';
+        }
+    }
+    checkboxes.forEach(cb => cb.addEventListener('change', update));
+});
+</script>
+{% endwith %}
+

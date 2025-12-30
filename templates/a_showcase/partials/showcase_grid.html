@@ -1,0 +1,26 @@
+{% load static %}
+
+{% if images %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    {% for img in images %}
+      <div class="relative overflow-hidden rounded-lg bg-slate-900/60 border border-slate-700">
+        <img
+          src="{{ img.image.url }}"
+          alt="Showcase image {{ forloop.counter }}"
+          class="w-full h-56 object-cover"
+          loading="lazy"
+        />
+        <div class="px-3 py-2 text-xs text-gray-400 flex justify-between items-center">
+          <span>{{ img.uploaded_at|date:"Y-m-d H:i" }}</span>
+          <span class="text-slate-500 truncate max-w-[8rem]">{{ img.image.name }}</span>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-sm text-gray-400">
+    No showcase images yet. Use the upload form to add some.
+  </p>
+{% endif %}
+
+

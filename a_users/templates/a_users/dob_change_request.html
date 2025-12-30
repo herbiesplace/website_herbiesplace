@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block layout %}
+<main class="max-w-2xl mx-auto px-4 py-10 space-y-6">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Request DOB Change</h1>
+        <p class="text-gray-600 mt-2">Submit a new date of birth. Adult content will be blocked until staff review.</p>
+    </div>
+    <div class="bg-white shadow rounded-lg p-6">
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+            <div class="space-y-1">
+                <label class="text-sm font-medium text-gray-700">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}<p class="text-xs text-gray-500">{{ field.help_text }}</p>{% endif %}
+                {% if field.errors %}<div class="text-red-600 text-sm">{{ field.errors }}</div>{% endif %}
+            </div>
+            {% endfor %}
+            <div class="flex gap-3">
+                <button type="submit" class="button">Submit request</button>
+                <a href="{% url 'profile-settings' %}" class="button button-gray">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
+
+
