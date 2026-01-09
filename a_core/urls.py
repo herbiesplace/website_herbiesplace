@@ -23,7 +23,7 @@ from a_home.views import *
 from a_share import urls as share_urls
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('debaas/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', include('a_home.urls')),
     path('', include('a_portfolio.urls')),

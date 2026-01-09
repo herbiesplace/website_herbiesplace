@@ -11,30 +11,30 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os
+import dj_database_url
+
 from environ import Env
 
 env = Env()
+env.read_env()
+
+
+
+# Set to True for connecting to remote database from local environment 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Explicitly load environment variables from a .env file in the project root
-Env.read_env(os.path.join(BASE_DIR, ".env"))
 
-ENVIRONMENT = env("ENVIRONMENT", default="production")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
+SECRET_KEY = env('SECRET_KEY')
 
-if ENVIRONMENT == "development":
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG = env('DEBUG', default=False)
     
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -55,11 +55,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_cleanup.apps.CleanupConfig',
     'django.contrib.sites',
-    'cloudinary_storage',
-    'cloudinary',
     'allauth',
     'allauth.account',
     'django_htmx',
+    'whitenoise.runserver_nostatic',
     'a_home',
     'a_users',
     'a_portfolio',
@@ -71,6 +70,7 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,7 +79,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -114,13 +114,51 @@ WSGI_APPLICATION = 'a_core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# Use DATABASE_URL if provided (Railway public connection), otherwise use SQLite for local development
+DATABASE_URL = env('DATABASE_URL', default=None)
 
+# Check if DATABASE_URL contains internal Railway hostname (not accessible from local machine)
+if DATABASE_URL and 'railway.internal' in DATABASE_URL:
+    # Reject internal Railway URLs - they only work inside Railway's network
+    print("WARNING: DATABASE_URL contains 'railway.internal' which is not accessible from your local machine.")
+    print("Please use the PUBLIC connection URL from Railway (hostname like 'containers-xxx.railway.app')")
+    print("Falling back to SQLite for local development.")
+    DATABASE_URL = None
+
+if DATABASE_URL:
+    # Parse the full database URL (Railway provides this as a public connection string)
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL)
+    }
+else:
+    # Check individual DB settings, but reject if they use internal hostname
+    db_host = env('DB_HOST', default=None)
+    if db_host and 'railway.internal' in db_host:
+        print("WARNING: DB_HOST contains 'railway.internal' which is not accessible from your local machine.")
+        print("Please use the PUBLIC connection URL from Railway or set DATABASE_URL with public hostname.")
+        print("Falling back to SQLite for local development.")
+        db_host = None
+    
+    if db_host:
+        # Use individual DB settings (only if host is public)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': env('DB_NAME'),
+                'USER': env('DB_USER'),
+                'PASSWORD': env('DB_PASSWORD'),
+                'HOST': db_host,
+                'PORT': env('DB_PORT'),
+            }
+        }
+    else:
+        # Use SQLite for local development when no database is configured
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -159,16 +197,15 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 
+#whitenoise static stuff
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = 'media/'
-if ENVIRONMENT == "development":
-    MEDIA_ROOT = BASE_DIR / 'media'
-else:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    CLOUDINARY_STORAGE = {
-        'CLOUDINARY_URL': env('CLOUDINARY_URL')
-    }
+
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
 # File upload settings
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB
@@ -188,9 +225,9 @@ ACCOUNT_SIGNUP_REDIRECT_URL = "{% url 'account_signup' %}?next={% url 'profile-o
 #Emailing settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_FROM = env("EMAIL_HOST_USER")
-EMAIL_HOST_USER = env("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD =env("EMAIL_HOST_PASSWORD")
+EMAIL_FROM = env('EMAIL_FROM')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -202,3 +239,4 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_FORMS = {
     'signup': 'a_users.adapters.CustomSignupForm',
 }
+ACCOUNT_USERNAME_BLACKLIST = ['debaas','admin', 'root', 'superuser', 'superadmin', 'superuseradmin', 'superadminadmin', 'superuseradminadmin']
