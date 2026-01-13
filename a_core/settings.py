@@ -15,15 +15,12 @@ import dj_database_url
 
 from environ import Env
 
-env = Env()
-env.read_env()
-
-
-
-# Set to True for connecting to remote database from local environment 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = Env()
+# Read .env file from the same directory as settings.py (a_core/.env)
+env.read_env(Path(__file__).parent / '.env')
 
 
 
@@ -34,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = env('DEBUG', default=False)
+DEBUG = True  # Temporarily enabled to see error details
     
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -201,10 +198,70 @@ STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = 'media/'
+AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME", default=None)
+AWS_ACCESS_KEY_ID = env("SPACES_KEY", default=None)
+AWS_SECRET_ACCESS_KEY = env("SPACES_SECRET", default=None)
+AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL", default=None)
+AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400',}
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None  # Use bucket default ACL
 
-MEDIA_ROOT = BASE_DIR / 'media'
+# Media files configuration (custom storage class)
+# Django 5.1+ uses STORAGES dictionary, but DEFAULT_FILE_STORAGE still works for backward compatibility
+# Only use S3 storage if credentials are provided, otherwise fall back to local
+if AWS_STORAGE_BUCKET_NAME and AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY and AWS_S3_ENDPOINT_URL:
+    # Ensure endpoint URL has https:// protocol for boto3
+    endpoint = AWS_S3_ENDPOINT_URL
+    if not endpoint.startswith('http://') and not endpoint.startswith('https://'):
+        endpoint = f'https://{endpoint}'
+    
+    # For MEDIA_URL, use the bucket subdomain format
+    endpoint_domain = endpoint.replace('https://', '').replace('http://', '')
+    MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.{endpoint_domain}/media/'
+    
+    # Set the endpoint URL for boto3 (must include https://)
+    AWS_S3_ENDPOINT_URL = endpoint
+    
+    # Don't set MEDIA_ROOT when using S3 storage
+    MEDIA_ROOT = None
+    
+    # Also set DEFAULT_FILE_STORAGE for backward compatibility
+    DEFAULT_FILE_STORAGE = 'a_core.storage_backends.MediaStorage'
+    
+    print(f"✓ DigitalOcean Spaces configured: {MEDIA_URL}")
+    print(f"  Bucket: {AWS_STORAGE_BUCKET_NAME}, Endpoint: {AWS_S3_ENDPOINT_URL}")
+    print(f"  Storage: {DEFAULT_FILE_STORAGE}")
+else:
+    # Fall back to local storage if S3 credentials are not configured
+    MEDIA_URL = 'media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    
+    print("⚠ WARNING: DigitalOcean Spaces not configured - using local storage")
+    print(f"  Missing: AWS_STORAGE_BUCKET_NAME={AWS_STORAGE_BUCKET_NAME is not None}, "
+          f"SPACES_KEY={AWS_ACCESS_KEY_ID is not None}, "
+          f"SPACES_SECRET={AWS_SECRET_ACCESS_KEY is not None}, "
+          f"AWS_S3_ENDPOINT_URL={AWS_S3_ENDPOINT_URL is not None}")
+    print(f"  Using: {DEFAULT_FILE_STORAGE}")
+    print("  Check your a_core/.env file has all required variables.")
 
+# For Django 5.1+, define STORAGES dictionary after determining which storage to use
+STORAGES = {
+    'default': {
+        'BACKEND': DEFAULT_FILE_STORAGE,
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+
+#MEDIA_URL = 'media/'
+
+#MEDIA_ROOT = BASE_DIR / 'media'
+
+# CDN URL for serving files
+# STATIC_URL = 'https://test-website.nyc3.cdn.digitaloceanspaces.com/static/'
+# MEDIA_URL = 'https://website-herbiesplace.ams3.digitaloceanspaces.com/media/'
 
 # File upload settings
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB

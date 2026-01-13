@@ -6,9 +6,47 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db.models import Q
+from django.core.files.base import ContentFile
+from io import BytesIO
+import os
+from PIL import Image
 from .forms import *
 from .models import FriendRequest, Message, DobChangeRequest, AuditLog
 from a_portfolio.models import Photo
+
+def _resize_avatar(file_obj, size: int = 320) -> ContentFile:
+    """
+    Resize an image to a square of `size` x `size` pixels.
+    Crops to center square first, then resizes. Returns a ContentFile ready to be saved.
+    """
+    img = Image.open(file_obj)
+    img = img.convert("RGB")
+
+    width, height = img.size
+    
+    # Crop to square (center crop)
+    if width > height:
+        # Landscape: crop width
+        left = (width - height) // 2
+        right = left + height
+        img = img.crop((left, 0, right, height))
+    elif height > width:
+        # Portrait: crop height
+        top = (height - width) // 2
+        bottom = top + width
+        img = img.crop((0, top, width, bottom))
+    # If already square, no crop needed
+    
+    # Resize to target size
+    if img.size[0] != size:
+        img = img.resize((size, size), Image.LANCZOS)
+    
+    # Save to buffer
+    buffer = BytesIO()
+    img.save(buffer, format="JPEG", quality=90)
+    buffer.seek(0)
+    return ContentFile(buffer.read())
+
 
 def profile_view(request, username=None):
     if username:
@@ -28,18 +66,31 @@ def profile_edit_view(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES, instance=request.user.profile, request=request)
         if form.is_valid():
-            profile = form.instance
+            profile = form.save(commit=False)
             old_role = profile.role
-            form.save()
+            
+            # Resize avatar image if uploaded
+            if 'image' in request.FILES:
+                image_file = request.FILES['image']
+                processed = _resize_avatar(image_file, size=320)
+                base_name, _ext = os.path.splitext(image_file.name)
+                filename = f"{base_name}_320.jpg"
+                # Save the resized image directly to the profile
+                profile.image.save(filename, processed, save=False)
+            
+            # Save the profile with all changes (including the resized image if uploaded)
+            profile.save()
+            # Save many-to-many fields if any (form.save_m2m() is only needed if commit=False and there are M2M fields)
+            
             # Audit role change
-            if old_role != form.instance.role:
+            if old_role != profile.role:
                 AuditLog.objects.create(
                     user=request.user,
                     actor=request.user,
                     action=AuditLog.ACTION_PROFILE,
                     field="role",
                     old_value=old_role,
-                    new_value=form.instance.role,
+                    new_value=profile.role,
                 )
             return redirect('profile')
         

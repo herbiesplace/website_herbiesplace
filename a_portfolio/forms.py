@@ -8,13 +8,10 @@ from a_users.models import Profile
 
 
 def validate_image_size(image):
-    """Validate that uploaded image is not too large"""
-    max_size = getattr(settings, 'MAX_PHOTO_SIZE', 10 * 1024 * 1024)  # Default 10 MB
-    if image.size > max_size:
-        max_size_mb = max_size / (1024 * 1024)
-        raise ValidationError(
-            f'Image file too large. Maximum size is {max_size_mb:.0f} MB.'
-        )
+    """Validate image format (no size limit - images will be resized)"""
+    # No size validation - images will be automatically resized to max 1920px on longest side
+    # Just return the image as-is since we're not validating size anymore
+    return
 
 
 class CategoryForm(ModelForm):

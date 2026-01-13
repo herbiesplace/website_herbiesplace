@@ -6,3 +6,7 @@ db.sqlite3
 .env
 .DS_Store
 old.env
+media
+portfolio
+static
+staticfiles

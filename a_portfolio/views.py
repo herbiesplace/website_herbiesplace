@@ -16,24 +16,25 @@ from a_users.models import Profile
 from a_users.models import Profile
 
 
-def _resize_shortest_side(file_obj, target: int = 1920) -> ContentFile:
+def _resize_longest_side(file_obj, target: int = 1920) -> ContentFile:
     """
-    Resize an image so that its shortest side is `target` pixels,
+    Resize an image so that its longest side is `target` pixels,
     keeping aspect ratio. Returns a ContentFile ready to be saved.
     """
     img = Image.open(file_obj)
     img = img.convert("RGB")
 
     width, height = img.size
-    shortest = min(width, height)
+    longest = max(width, height)
 
-    if shortest == target:
+    if longest <= target:
+        # Image is already smaller than target, just save it
         buffer = BytesIO()
         img.save(buffer, format="JPEG", quality=90)
         buffer.seek(0)
         return ContentFile(buffer.read())
 
-    scale = target / shortest
+    scale = target / longest
     new_size = (int(width * scale), int(height * scale))
     img = img.resize(new_size, Image.LANCZOS)
 
@@ -289,9 +290,9 @@ def photo_create(request):
                 )
                 photo.save()
 
-                processed = _resize_shortest_side(image_file, target=1920)
+                processed = _resize_longest_side(image_file, target=1920)
                 base_name, _ext = os.path.splitext(image_file.name)
-                filename = f"{base_name}_1920.jpg"
+                filename = f"{base_name}_max1920.jpg"
                 photo.image.save(filename, processed, save=True)
 
                 allowed_friends = form.cleaned_data.get("allowed_friends")
