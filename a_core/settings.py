@@ -31,7 +31,7 @@ env.read_env(Path(__file__).parent / '.env')
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = True  # Temporarily enabled to see error details
+DEBUG = False  # Temporarily enabled to see error details
     
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'django_htmx',
     'whitenoise.runserver_nostatic',
+    'anymail',
     'a_home',
     'a_users',
     'a_portfolio',
@@ -279,17 +280,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_SIGNUP_REDIRECT_URL = "{% url 'account_signup' %}?next={% url 'profile-onboarding' %}"
 
-#Emailing settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_FROM = env('EMAIL_FROM')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD =env('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+#Emailing settings for gmail not working in railway
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#EMAIL_HOST = 'smtp.gmail.com'
+#EMAIL_FROM = 'herbiesplace.be@gmail.com'
+#DEFAULT_FROM_EMAIL = 'herbiesplace.be@gmail.com'  # Django uses DEFAULT_FROM_EMAIL
+#EMAIL_HOST_USER = 'herbertingels@gmail.com'
+#EMAIL_HOST_PASSWORD = 'moehndaeonvtlzdu'
+#EMAIL_PORT = 587
+#EMAIL_USE_TLS = True
+#ACCOUNT_EMAIL_SUBJECT_PREFIX = 'testing...'
 
 # For development, you can use console backend to see emails in terminal
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#email using anymail and Brevo provider
+EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
+
+ANYMAIL = {
+    'BREVO_API_KEY': env('BREVO_API_KEY'),
+}
+DEFAULT_FROM_EMAIL = 'herbertingels@gmail.com'
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True

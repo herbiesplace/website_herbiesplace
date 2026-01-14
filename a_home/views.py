@@ -68,7 +68,11 @@ This email was sent from the portfolio website contact form.
                 messages.success(request, 'Thank you! Your message has been sent successfully.')
                 return redirect('contact')
             except Exception as e:
-                messages.error(request, f'Sorry, there was an error sending your message. Please try again later.')
+                # Log the error for debugging (in production, use proper logging)
+                import traceback
+                print(f"Email error: {e}")
+                traceback.print_exc()
+                messages.error(request, f'Sorry, there was an error sending your message: {str(e)}. Please try again later.')
     else:
         form = ContactForm()
     
