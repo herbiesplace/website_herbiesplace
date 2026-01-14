@@ -36,9 +36,9 @@ DEBUG = False  # Temporarily enabled to see error details
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['websiteherbiesplace-production.up.railway.app','localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['herbiesplace.be','websiteherbiesplace-production.up.railway.app','localhost', '127.0.0.1', '*']
 
-CSRF_TRUSTED_ORIGINS = [ 'https://websiteherbiesplace-production.up.railway.app' ]
+CSRF_TRUSTED_ORIGINS = [ 'https://herbiesplace.be','https://websiteherbiesplace-production.up.railway.app' ]
 
 
 # Application definition
@@ -280,16 +280,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_SIGNUP_REDIRECT_URL = "{% url 'account_signup' %}?next={% url 'profile-onboarding' %}"
 
-#Emailing settings for gmail not working in railway
-#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_HOST = 'smtp.gmail.com'
-#EMAIL_FROM = 'herbiesplace.be@gmail.com'
-#DEFAULT_FROM_EMAIL = 'herbiesplace.be@gmail.com'  # Django uses DEFAULT_FROM_EMAIL
-#EMAIL_HOST_USER = 'herbertingels@gmail.com'
-#EMAIL_HOST_PASSWORD = 'moehndaeonvtlzdu'
-#EMAIL_PORT = 587
-#EMAIL_USE_TLS = True
-#ACCOUNT_EMAIL_SUBJECT_PREFIX = 'testing...'
+ 
 
 # For development, you can use console backend to see emails in terminal
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -300,7 +291,7 @@ EMAIL_BACKEND = "anymail.backends.brevo.EmailBackend"
 ANYMAIL = {
     'BREVO_API_KEY': env('BREVO_API_KEY'),
 }
-DEFAULT_FROM_EMAIL = 'herbertingels@gmail.com'
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
