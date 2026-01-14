@@ -36,9 +36,9 @@ DEBUG = False  # Temporarily enabled to see error details
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-ALLOWED_HOSTS = ['herbiesplace.be','websiteherbiesplace-production.up.railway.app','localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['www.herbiesplace.be','herbiesplace.be','websiteherbiesplace-production.up.railway.app','localhost', '127.0.0.1', '*']
 
-CSRF_TRUSTED_ORIGINS = [ 'https://herbiesplace.be','https://websiteherbiesplace-production.up.railway.app' ]
+CSRF_TRUSTED_ORIGINS = [ 'https://www.herbiesplace.be','https://herbiesplace.be','https://websiteherbiesplace-production.up.railway.app' ]
 
 
 # Application definition
